@@ -1,0 +1,37 @@
+services:
+  web:
+    build: .
+    ports:
+      - "8090:80"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_HOST: db
+      DB_NAME: mgc_gowes
+      DB_USER: mgc
+      DB_PASS: mgc123
+      BASE_URL: "" # root domain; isi /gowes jika subpath
+    volumes:
+      - ./uploads:/var/www/html/uploads
+    restart: unless-stopped
+
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: mgc_gowes
+      MYSQL_USER: mgc
+      MYSQL_PASSWORD: mgc123
+      MYSQL_ROOT_PASSWORD: root123
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./sql/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./sql/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql:ro
+    healthcheck:
+      test: ["CMD","mysqladmin","ping","-h","localhost","-u","mgc","-pmgc123"]
+      interval: 5s
+      retries: 20
+    restart: unless-stopped
+
+volumes:
+  db_data:
