@@ -4,7 +4,11 @@ define('DB_HOST', getenv('DB_HOST') ?: '127.0.0.1');
 define('DB_NAME', getenv('DB_NAME') ?: 'mgc_gowes');
 define('DB_USER', getenv('DB_USER') ?: 'root');
 define('DB_PASS', getenv('DB_PASS') !== false ? getenv('DB_PASS') : '');
-define('BASE_URL', getenv('BASE_URL') !== false ? getenv('BASE_URL') : '/gowes');
+// auto BASE_URL: localhost -> /gowes, hosting subdomain (gowes.aaw.my.id) -> "" (DocumentRoot sudah /gowes)
+// override via env SetEnv BASE_URL ""
+$__host = $_SERVER['HTTP_HOST'] ?? '';
+$__base_auto = (str_contains($__host, 'localhost') || str_contains($__host, '127.0.0.1')) ? '/gowes' : '';
+define('BASE_URL', getenv('BASE_URL') !== false ? rtrim(getenv('BASE_URL'), '/') : $__base_auto); unset($__host, $__base_auto);
 define('SITE_NAME','MGC — Manggar Gowes Community');
 define('WA_LINK','https://wa.me/6281234567890?text=Halo%20MGC%20mau%20gabung%20gowes');
 
