@@ -1,1 +1,7 @@
-<?php session_start(); session_destroy(); header('Location: /gowes/admin/index.php'); exit;
+<?php
+require_once __DIR__.'/../includes/config.php';
+if (session_status() === PHP_SESSION_NONE) session_start();
+$_SESSION = [];
+session_destroy();
+header('Location: ' . BASE_URL . '/admin/index.php');
+exit;
